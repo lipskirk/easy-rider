@@ -5,56 +5,58 @@
 Simulation::Simulation()
 {
     srand(time(NULL));
-    roadmap.maketestmap();
-    roadmap.findstartpoints();
+    roadmap.makeTestMap();
+    roadmap.findStartPoints();
 }
 
-void Simulation::update(double xtime, int xcars, int xbikes, int xtrucks)
+void Simulation::updateSimulation(double xtime, int xcars, int xbikes, int xtrucks)
 {
-    if(!vehicles.checkifvehiclesfull(xcars+xbikes+xtrucks)){
+    if(!vehicles.checkIfVehiclesFull(xcars+xbikes+xtrucks)){
         Vec2d startpointvec;
-        if(roadmap.choosestartpoint(startpointvec))
+        if(roadmap.chooseStartPoint(startpointvec))
         {
-            vehicles.addvehicle(xcars,xbikes,xtrucks,startpointvec);
-            roadmap.setfree(startpointvec,false);
+            vehicles.addVehicle(xcars,xbikes,xtrucks,startpointvec);
+            roadmap.setFree(startpointvec,false);
         }
     }
 
     Vehicle* vehicletmp=nullptr;
-    int cnt=-1;
+    int cnt=0;
 
-    while(vehicles.getvehicle(cnt,vehicletmp))
+    while(vehicles.getVehiclePtr(vehicletmp,cnt))
     {
-        vehicletmp->lookaround(roadmap);
-        if(!(vehicletmp->move(roadmap,xtime)))
+        if(!(vehicletmp->moveVehicle(roadmap,xtime)))
         {
-            vehicles.deletevehicle(cnt);
+            vehicles.deleteVehicle(cnt);
         }
+        cnt++;
     }
 }
 
-void Simulation::printvehiclespos(std::vector<Machine*>& xmachines)
+void Simulation::printVehiclesPosition(std::vector<Machine*>& xmachines)
 {
     Vehicle *vehicletmp=nullptr;
-    int cnt=-1;
+    int cnt=0;
 
-    while(vehicles.getvehicle(cnt,vehicletmp))
+    while(vehicles.getVehiclePtr(vehicletmp,cnt))
     {
-        xmachines.push_back(vehicletmp->getmachine());
+        xmachines.push_back(vehicletmp->getMachinePtr());
+        cnt++;
     }
 }
 
-void Simulation::printroadspos(std::vector<Vec2d>& xroads)
+void Simulation::printRoadsPosition(std::vector<Vec2d>& xroads)
 {
     Vec2d vecptr;
     Vec2d vecdir0(0,0);
-    int cnt=-1;
+    int cnt=0;
 
-    while(roadmap.getroadpos(cnt,vecptr))
+    while(roadmap.getRoadPosition(vecptr,cnt))
     {
-        if(roadmap.checkifroad(vecptr)){
+        if(roadmap.checkIfRoad(vecptr)){
             xroads.push_back(vecptr);
         }
+        cnt++;
     }
 
 }

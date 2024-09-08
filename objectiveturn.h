@@ -6,7 +6,7 @@ class ObjectiveTurn : public Objective
 {
 public:
     ObjectiveTurn();
-    bool scan(Roadmap &xmapptr, Driver *&driver, Machine *&machine, Objective *&objective) override;
+    bool move(Roadmap &xmapptr, Driver *&driver, Machine *&machine, Objective *&objective, float xdist) override;
 };
 
 #endif // OBJECTIVETURN_H

@@ -5,20 +5,32 @@
 class Machine
 {
 protected:
+    int deleteCountdown;
     float speed;
-    float maxspeed;
+    float maxSpeed;
     float acceleration;
-    Vec2d pos;
+    float maxAcceleration;
+    float minAcceleration;
+    Vec2d position;
+
 public:
     Machine();
-    void drive(Vec2d xdirvec, float xtime);
-    void moveto(Vec2d xvec);
-    void changespeed(float xvalue);
-    float getposx();
-    float getposy();
-    float getspeed();
-    virtual char gettype()=0;
-    virtual void countup(int vnumber[])=0;
+
+    void countdownToDelete();
+    bool checkIfToDelete();
+
+    float getSpeed();
+    float getAcceleration();
+    float getPositionX();
+    float getPositionY();
+    float getPredictedDistance(float xtime);
+
+    void adjustAcceleration(float xvalue);
+    void moveTo(Vec2d xvec);
+    float drive(Vec2d xdirvec, float xtime);
+
+    virtual char getMachineType()=0;
+    virtual void countMachineType(int vnumber[])=0;
 };
 
 #endif // MACHINE_H

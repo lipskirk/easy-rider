@@ -6,7 +6,7 @@ class ObjectiveStop : public Objective
 {
 public:
     ObjectiveStop();
-    bool scan(Roadmap &xmapptr, Driver *&driver, Machine *&machine, Objective *&objective) override;
+    bool move(Roadmap &xmapptr, Driver *&driver, Machine *&machine, Objective *&objective, float xdist) override;
 };
 
 #endif // OBJECTIVESTOP_H

@@ -5,24 +5,23 @@
 
 Vehicles::Vehicles() {}
 
-bool Vehicles::getvehicle(int &xcnt, Vehicle *&vehicleptr)
+bool Vehicles::getVehiclePtr(Vehicle *&vehicleptr,int xnum)
 {
-    xcnt++;
-    if(xcnt<static_cast<int>(vehicles.size()))
+    if(xnum<static_cast<int>(vehicles.size()))
     {
-        vehicleptr=vehicles[xcnt].get();
+        vehicleptr=vehicles[xnum].get();
         return true;
     }
     return false;
 }
 
-void Vehicles::deletevehicle(int &xcnt)
+void Vehicles::deleteVehicle(int &xcnt)
 {
     vehicles.erase(vehicles.begin()+xcnt);
     xcnt--;
 }
 
-bool Vehicles::checkifvehiclesfull(int xnumber)
+bool Vehicles::checkIfVehiclesFull(int xnumber)
 {
     if(static_cast<int>(vehicles.size())<xnumber)
     {
@@ -31,7 +30,7 @@ bool Vehicles::checkifvehiclesfull(int xnumber)
     return true;
 }
 
-void Vehicles::addvehicle(int xc, int xb, int xt, Vec2d xvecpos)
+void Vehicles::addVehicle(int xc, int xb, int xt, Vec2d xvecpos)
 {
     int vnumber[3];
     vnumber[0]=xc;
@@ -39,7 +38,7 @@ void Vehicles::addvehicle(int xc, int xb, int xt, Vec2d xvecpos)
     vnumber[2]=xt;
     for(auto& elem:vehicles)
     {
-        elem->getmachine()->countup(vnumber);
+        elem->getMachinePtr()->countMachineType(vnumber);
     }
     Machine* machineptr;
     if((xc>xb)&&(xc>xt))

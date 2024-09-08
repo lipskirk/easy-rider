@@ -6,8 +6,8 @@ class Bike :public Machine
 {
 public:
     Bike(Vec2d xposvec);
-    void countup(int vnumber[]) override;
-    char gettype() override;
+    void countMachineType(int vnumber[]) override;
+    char getMachineType() override;
 };
 
 #endif // BIKE_H

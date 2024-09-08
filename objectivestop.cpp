@@ -2,19 +2,24 @@
 
 ObjectiveStop::ObjectiveStop() {}
 
-bool ObjectiveStop::scan(Roadmap &xmapptr, Driver *&driver, Machine *&machine, Objective *&objective)
+bool ObjectiveStop::move(Roadmap &xmapptr, Driver *&driver, Machine *&machine, Objective *&objective, float xdist)
 {
     bool objectivechanged=false;
-    Vec2d posvec(machine->getposx(),machine->getposy());
-    Vec2d xdirvec=xmapptr.getdirection(posvec);
-    Vec2d checkvec=posvec+xdirvec;
-    if(xmapptr.checkifroad(checkvec))
+
+    driver->goToRoadSide(xmapptr,machine,true);
+
+    Vec2d xposvec(machine->getPositionX(),machine->getPositionY());
+    Vec2d xdirvec=xmapptr.getDirection(xposvec);
+    Vec2d checkvec=xposvec+xdirvec;
+    if(xmapptr.checkIfRoad(checkvec))
     {
         driver->brake(machine);
     }
-    else
+    else if(xmapptr.checkIfInBounds(checkvec))
     {
         driver->stop(machine);
+        machine->countdownToDelete();
     }
+
     return objectivechanged;
 }

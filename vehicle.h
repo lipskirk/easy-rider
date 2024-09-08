@@ -13,11 +13,8 @@ private:
     Objective* obj;
 public:
     Vehicle(Machine *xmachineptr);
-    void lookaround(Roadmap &xmapptr);
-    bool move(Roadmap &xmapptr, float xtime);
-    //template <typename T> void setobjective(){obj=new T;}
-    Machine* getmachine();
-    Objective* getobjective();
+    bool moveVehicle(Roadmap &xmapptr, float xtime);
+    Machine* getMachinePtr();
 };
 
 #endif // VEHICLE_H

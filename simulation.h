@@ -11,10 +11,9 @@ private:
     Vehicles vehicles;
 public:
     Simulation();
-    void update(double xtime, int xcars, int xbikes, int xtrucks);
-    void setvehicles(int v);
-    void printvehiclespos(std::vector<Machine*> &xmachines);
-    void printroadspos(std::vector<Vec2d> &xroads);
+    void updateSimulation(double xtime, int xcars, int xbikes, int xtrucks);
+    void printVehiclesPosition(std::vector<Machine*> &xmachines);
+    void printRoadsPosition(std::vector<Vec2d> &xroads);
 };
 
 #endif // SIMULATION_H

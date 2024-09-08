@@ -11,10 +11,10 @@ private:
 
 public:
     Vehicles();
-    void deletevehicle(int &xcnt);
-    bool checkifvehiclesfull(int xnumber);
-    void addvehicle(int xc, int xb, int xt, Vec2d xvecpos);
-    bool getvehicle(int &n, Vehicle *&vehicleptr);
+    void addVehicle(int xc, int xb, int xt, Vec2d xvecpos);//zamienic osobne liczby na tablice
+    void deleteVehicle(int &xcnt);
+    bool checkIfVehiclesFull(int xnumber);
+    bool getVehiclePtr(Vehicle *&vehicleptr, int xnum);
 };
 
 #endif // VEHICLES_H

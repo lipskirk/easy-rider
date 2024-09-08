@@ -2,18 +2,20 @@
 
 Truck::Truck(Vec2d xposvec)
 {
-    pos=xposvec;
+    position=xposvec;
     speed=10;
-    maxspeed=30;
-    acceleration=0.2;
+    maxSpeed=30;
+    acceleration=0;
+    maxAcceleration=5;
+    minAcceleration=-10;
 }
 
-void Truck::countup(int vnumber[])
+void Truck::countMachineType(int vnumber[])
 {
     vnumber[2]--;
 }
 
-char Truck::gettype()
+char Truck::getMachineType()
 {
     return 't';
 }

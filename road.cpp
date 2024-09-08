@@ -2,27 +2,22 @@
 
 Road::Road(bool xfree,int xpos, int ypos,float xdir, float ydir)
 {
-    free=xfree;
-    position.setxy(xpos,ypos);
-    direction.setxy(xdir,ydir);
+    isFree=xfree;
+    position.setXY(xpos,ypos);
+    direction.setXY(xdir,ydir);
 }
 
-void Road::setfree(bool xstate)
+float Road::getPositionX()
 {
-    free=xstate;
+    return position.getX();
 }
 
-float Road::getposx()
+float Road::getPositionY()
 {
-    return position.getx();
+    return position.getY();
 }
 
-float Road::getposy()
-{
-    return position.gety();
-}
-
-bool Road::checkifroad()
+bool Road::checkIfRoad()
 {
     Vec2d zerovec(0,0);
     if(direction==zerovec)
@@ -32,12 +27,17 @@ bool Road::checkifroad()
     return true;
 }
 
-bool Road::checkiffree()
+bool Road::checkIfFree()
 {
-    return free;
+    return isFree;
 }
 
-Vec2d Road::getdirection()
+Vec2d Road::getDirection()
 {
     return direction;
+}
+
+void Road::setFree(bool xstate)
+{
+    isFree=xstate;
 }

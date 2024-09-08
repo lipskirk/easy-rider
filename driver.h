@@ -2,42 +2,44 @@
 #define DRIVER_H
 #include "vec2d.h"
 #include "machine.h"
+#include "roadmap.h"
 
 class Driver
 {
 private:
-    bool turnright;
-    bool isovertaking;
-    float disttoturn;
-    float disttoobstacle;
-    float disttoovertake;
+    bool preferredTurnRight;
+    bool isOvertaking;
+    float distanceToStop;
+    float distanceToObstacle;
+    float distanceToOvertake;
+    Vec2d crossDirection;
 
 public:
     Driver();
 
-    bool checkifturnright();
-    bool checkifovertaking();
-    float getdisttoturn();
-    float getdisttoobstacle();
-    float getdisttoovertake();
+    void setDistanceToStop(float xdist);
+    void setDistanceToObstacle(float xdist);
+    void setCrossDirection(Vec2d xvec);
+    void keepDistanceToVehicleAhead(Machine *&xmachine, float xtime);
+    void reduceDistanceToStop(float xchange);
 
-    void setturnright(bool xdir);
-    void startovertaking();
-    void overtakingdone();
-    void setdisttoturn(float xdist);
-    void setdisttoobstacle(float xdist);
-    void setdisttoovertake(float xdist);
+    bool checkIfPreferredToTurnRight();
+    bool checkIfOvertaking(Roadmap &xroadmap,Machine *&xmachine);
+    float getDistanceToObstacle();
+    bool checkIfCrossing();
+    Vec2d getCrossDirection();
+    float checkDistanceToVehicleAhead(Roadmap &xroadmap, Machine *&xmachine, float xrange);
+    bool checkIfCanOvertake(Roadmap &xroadmap,Machine *&xmachine);
 
-
+    void startOvertaking(Roadmap &xroadmap, Machine *&xmachine, float disttoobst);
+    bool goToRoadSide(Roadmap &xroadmap, Machine *&xmachine, bool toright=false);
     void accelerate(Machine *&xmachine);
     void brake(Machine *&xmachine);
     void stop(Machine *&xmachine);
-    void changelane(Machine *&xmachine, Vec2d xvec);
-    void join(Machine *&xmachine, Vec2d xvec);
-    void setistostop(float xdist);
-    bool chooseifturn(float xdist, bool turnright, bool bypass=false);
-    bool chooseifjoin(float xdist, bool xturnright, bool bypass=false);
-    void resetdirection();
+    void changeLane(Machine *&xmachine, Vec2d xvec);
+    bool chooseIfTurn(float xdist, bool turnright, bool bypass=false);
+    bool chooseIfJoin(float xdist, bool xturnright, bool bypass=false);
+    void resetObjective();
 
 };
 

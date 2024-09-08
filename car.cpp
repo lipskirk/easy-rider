@@ -2,18 +2,20 @@
 
 Car::Car(Vec2d xposvec)
 {
-    pos=xposvec;
+    position=xposvec;
     speed=30;
-    maxspeed=50;
-    acceleration=0.5;
+    maxSpeed=30;
+    acceleration=0;
+    maxAcceleration=10;
+    minAcceleration=-10;
 }
 
-void Car::countup(int vnumber[])
+void Car::countMachineType(int vnumber[])
 {
     vnumber[0]--;
 }
 
-char Car::gettype()
+char Car::getMachineType()
 {
     return 'c';
 }

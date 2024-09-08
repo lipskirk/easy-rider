@@ -8,43 +8,41 @@ Vehicle::Vehicle(Machine *xmachineptr)
     obj=new ObjectiveForward;
 }
 
-void Vehicle::lookaround(Roadmap &xmapptr)
+bool Vehicle::moveVehicle(Roadmap &xmapptr, float xtime)
 {
     Objective* objptrtmp=nullptr;
-    if(obj->scan(xmapptr,driver,machine,objptrtmp))
+    if(obj->move(xmapptr,driver,machine,objptrtmp,machine->getPredictedDistance(xtime)))
     {
         obj=objptrtmp;
     }
-}
 
-bool Vehicle::move(Roadmap &xmapptr, float xtime)
-{
-    //zwolnieie pola dotyczasowego z xmapptr
-    Vec2d posvec(machine->getposx(),machine->getposy());
-    xmapptr.setfree(posvec,true);
+    //zwolnienie pola dotyczasowego z xmapptr
+    Vec2d posvec(machine->getPositionX(),machine->getPositionY());
+    xmapptr.setFree(posvec,true);
 
-    //przesuniecie wynikajace z parametrow pojazu i czasu
-    machine->drive(xmapptr.getdirection(posvec),xtime);
+    if(!machine->checkIfToDelete()){
+        Vec2d dirvec=xmapptr.getDirection(posvec);
+        if(driver->checkIfCrossing()){
+            dirvec=driver->getCrossDirection();
+        }
+        driver->keepDistanceToVehicleAhead(machine,xtime);
+        driver->reduceDistanceToStop(machine->drive(dirvec,xtime));
 
-    //sprawdzenie czy nowa pozycja miesci sie w mapie
-    posvec.setxy(machine->getposx(),machine->getposy());
-    if(xmapptr.checkifinbound(posvec))
-    {
-        //jesli tak to zajecie pola w nowej pozycji
-        xmapptr.setfree(posvec,false);
-        return true;
+        //sprawdzenie czy nowa pozycja miesci sie w mapie
+        posvec.setXY(machine->getPositionX(),machine->getPositionY());
+        if(xmapptr.checkIfInBounds(posvec))
+        {
+            //jesli tak to zajecie pola w nowej pozycji
+            xmapptr.setFree(posvec,false);
+            return true;
+        }
     }
     return false;
 }
 
-Machine* Vehicle::getmachine()
+Machine* Vehicle::getMachinePtr()
 {
     return machine;
-}
-
-Objective* Vehicle::getobjective()
-{
-    return obj;
 }
 
 

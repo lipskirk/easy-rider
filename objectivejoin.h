@@ -6,7 +6,7 @@ class ObjectiveJoin : public Objective
 {
 public:
     ObjectiveJoin();
-    bool scan(Roadmap &xmapptr, Driver *&driver, Machine *&machine, Objective *&objective) override;
+    bool move(Roadmap &xmapptr, Driver *&driver, Machine *&machine, Objective *&objective, float xdist) override;
 };
 
 #endif // OBJECTIVEJOIN_H

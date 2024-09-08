@@ -1,45 +1,94 @@
 #include "machine.h"
 
-Machine::Machine() {}
-
-void Machine::drive(Vec2d xdirvec, float xtime)
+Machine::Machine()
 {
-    pos=pos+(xdirvec*(speed*xtime));
+    deleteCountdown=10;
 }
 
-void Machine::moveto(Vec2d xvec)
+
+void Machine::countdownToDelete()
 {
-    pos=pos+xvec;
+    deleteCountdown--;
 }
 
-void Machine::changespeed(float xvalue)
+bool Machine::checkIfToDelete()
 {
-    xvalue=xvalue*acceleration;
-    if(speed+xvalue>maxspeed)
+    if(deleteCountdown<=0)
     {
-        speed=maxspeed;
+        return true;
     }
-    else if(speed+xvalue<0)
-    {
-        speed=0;
-    }
-    else
-    {
-        speed=speed+xvalue;
-    }
+    return false;
 }
 
-float Machine::getspeed()
+
+float Machine::getSpeed()
 {
     return speed;
 }
 
-float Machine::getposx()
+float Machine::getAcceleration()
 {
-    return pos.getx();
+    return acceleration;
 }
 
-float Machine::getposy()
+float Machine::getPositionX()
 {
-    return pos.gety();
+    return position.getX();
+}
+
+float Machine::getPositionY()
+{
+    return position.getY();
+}
+
+float Machine::getPredictedDistance(float xtime)
+{
+    float distance=(speed*xtime+acceleration*xtime*xtime);
+    if(distance<0){
+        return 0;
+    }
+    return 10*distance;
+}
+
+
+void Machine::adjustAcceleration(float xvalue)
+{
+    acceleration=acceleration+xvalue;
+    if(acceleration>maxAcceleration)
+    {
+        acceleration=maxAcceleration;
+    }
+    if(acceleration<minAcceleration)
+    {
+        acceleration=minAcceleration;
+    }
+}
+
+void Machine::moveTo(Vec2d xvec)
+{
+    position=position+xvec;
+}
+
+float Machine::drive(Vec2d xdirvec, float xtime)
+{
+    float distance=(speed*xtime+acceleration*xtime*xtime);
+
+    if(distance<0)
+    {
+        distance=0;
+        speed=0;
+        acceleration=0;
+    }
+
+    position=position+xdirvec*distance;
+    speed=speed+acceleration*xtime;
+    if(speed>maxSpeed)
+    {
+        speed=maxSpeed;
+    }
+    if(speed<0)
+    {
+        speed=0;
+    }
+    return distance;
 }

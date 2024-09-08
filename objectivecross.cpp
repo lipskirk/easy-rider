@@ -3,71 +3,93 @@
 
 ObjectiveCross::ObjectiveCross() {}
 
-bool ObjectiveCross::scan(Roadmap& xmapptr, Driver *&driver, Machine *&machine, Objective *&objective)
+bool ObjectiveCross::move(Roadmap& xmapptr, Driver *&driver, Machine *&machine, Objective *&objective, float xdist)
 {
-    bool objectivechanged=false;
-    Vec2d xposvec(machine->getposx(),machine->getposy());
-    Vec2d nowpos=xposvec;
-    Vec2d xdirvec=xmapptr.getdirection(xposvec);
-    driver->brake(machine);
-    xposvec=xposvec+xdirvec;//pole z przodu do sprawdzenia
-    bool free=true;
-    if(xmapptr.checkifdirection(xposvec,xdirvec.perpendicular())||xmapptr.checkifdirection(xposvec,xdirvec.perpendicular()*(-1)))
+    Vec2d posvec(machine->getPositionX(),machine->getPositionY());
+    if(driver->checkIfCrossing())
     {
-        while(xmapptr.checkifdirection(xposvec,xdirvec.perpendicular())||xmapptr.checkifdirection(xposvec,xdirvec.perpendicular()*(-1)))
+        if(xmapptr.checkIfDirectionSame(posvec,driver->getCrossDirection()))
         {
-            float n=0;
-            Vec2d checkvec=xposvec;
-            while(n<=10){
-                checkvec=checkvec+xdirvec.perpendicular();
-                n=n+1;
-                if(xmapptr.checkifroad(checkvec)
-                    &&(xmapptr.checkifdirection(checkvec,xdirvec.perpendicular())||xmapptr.checkifdirection(checkvec,xdirvec.perpendicular()*(-1)))
-                    &&(!xmapptr.checkiffree(checkvec)))
-                {
-                    free=false;
-                    break;
-                }
-            }
-            if(free)
+            Vec2d vec0(0,0);
+            driver->setCrossDirection(vec0);
+            objective=new ObjectiveForward;
+            return true;
+        }
+        driver->accelerate(machine);
+    }
+    else
+    {
+        driver->goToRoadSide(xmapptr,machine,true);
+
+        Vec2d xposvec(machine->getPositionX(),machine->getPositionY());
+        Vec2d xdirvec=xmapptr.getDirection(xposvec);
+        Vec2d checkvec=xposvec+xdirvec;
+        if((xmapptr.checkIfDirectionSame(checkvec,xdirvec.getPerpendicular()))||(xmapptr.checkIfDirectionSame(checkvec,xdirvec.getPerpendicular()*(-1))))
+        {
+            bool free=true;
+
+            while(xmapptr.checkIfDirectionSame(xposvec,xdirvec.getPerpendicular())||xmapptr.checkIfDirectionSame(xposvec,xdirvec.getPerpendicular()*(-1)))
             {
-                checkvec=xposvec;
-                n=0;
+                float n=0;
+                Vec2d checkvec=xposvec;
                 while(n<=10){
-                    checkvec=checkvec-xdirvec.perpendicular();
+                    checkvec=checkvec+xdirvec.getPerpendicular();
                     n=n+1;
-                    if(xmapptr.checkifroad(checkvec)
-                        &&(xmapptr.checkifdirection(checkvec,xdirvec.perpendicular())||xmapptr.checkifdirection(checkvec,xdirvec.perpendicular()*(-1)))
-                        &&(!xmapptr.checkiffree(checkvec)))
+                    if(xmapptr.checkIfRoad(checkvec)
+                        &&(xmapptr.checkIfDirectionSame(checkvec,xdirvec.getPerpendicular())||xmapptr.checkIfDirectionSame(checkvec,xdirvec.getPerpendicular()*(-1)))
+                        &&(!xmapptr.checkIfFree(checkvec)))
                     {
                         free=false;
                         break;
                     }
                 }
+                if(free)
+                {
+                    checkvec=xposvec;
+                    n=0;
+                    while(n<=10){
+                        checkvec=checkvec-xdirvec.getPerpendicular();
+                        n=n+1;
+                        if(xmapptr.checkIfRoad(checkvec)
+                            &&(xmapptr.checkIfDirectionSame(checkvec,xdirvec.getPerpendicular())||xmapptr.checkIfDirectionSame(checkvec,xdirvec.getPerpendicular()*(-1)))
+                            &&(!xmapptr.checkIfFree(checkvec)))
+                        {
+                            free=false;
+                            break;
+                        }
+                    }
+                }
+                if(!free)
+                {
+                    break;
+                }
+                xposvec=xposvec+xdirvec;
             }
-            if(!free)
+            if(free)
             {
-                break;
+                driver->setCrossDirection(xdirvec);
+                Vec2d posvectmp(machine->getPositionX(),machine->getPositionY());
+                xmapptr.setFree(posvectmp,true);
+                driver->changeLane(machine,xdirvec); //inaczej
+                posvectmp.setXY(machine->getPositionX(),machine->getPositionY());
+                xmapptr.setFree(posvectmp,false);
+                driver->resetObjective();
+
+
+                //tutaj przejazd przez przecznice, ignorowanie mapy i jazda do przodu az mapa bedzie do przodu
             }
-            xposvec=xposvec+xdirvec;
-        }
-        if(free)
-        {
-            //to jako przejazd przecznicy przed drivera?------
-            Vec2d posvectmp(machine->getposx(),machine->getposy());
-            xmapptr.setfree(posvectmp,true);
-            driver->changelane(machine,xposvec-nowpos);
-            posvectmp.setxy(machine->getposx(),machine->getposy());
-            xmapptr.setfree(posvectmp,false);
-            driver->resetdirection();
-            objective=new ObjectiveForward;
-            objectivechanged=true;
-            //--------------------
+            else
+            {
+                driver->stop(machine);
+            }
+
         }
         else
         {
-            driver->stop(machine);
+            driver->brake(machine);
+            //driver->slowdown(xmapptr,machine);
         }
     }
-    return objectivechanged;
+
+    return false;
 }

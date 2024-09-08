@@ -8,7 +8,7 @@ class Objective
 {
 public:
     Objective();
-    virtual bool scan(Roadmap &xmapptr, Driver *&driver, Machine *&machine, Objective *&objective)=0;
+    virtual bool move(Roadmap &xmapptr, Driver *&driver, Machine *&machine, Objective *&objective, float xdist)=0;
 };
 
 #endif // OBJECTIVE_H

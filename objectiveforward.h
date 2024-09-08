@@ -6,8 +6,8 @@ class ObjectiveForward : public Objective
 {
 public:
     ObjectiveForward();
-    bool scan(Roadmap &xmapptr, Driver *&driver, Machine *&machine, Objective *&objective) override;
-    bool lookforturns(Roadmap &xmapptr, Driver *&driver, Machine *&machine, Objective *&objective);
+    bool move(Roadmap &xmapptr, Driver *&driver, Machine *&machine, Objective *&objective, float xdist) override;
+    bool checkIfRoadStraight(Roadmap &xmapptr, Driver *&driver, Machine *&machine, Objective *&objective, float xdist);
 };
 
 #endif // OBJECTIVEFORWARD_H

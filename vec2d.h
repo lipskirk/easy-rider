@@ -9,10 +9,10 @@ private:
 public:
     Vec2d();
     Vec2d(float sx, float sy);
-    float getx();
-    float gety();
-    void setxy(float sx, float sy);
-    Vec2d perpendicular();
+    float getX();
+    float getY();
+    void setXY(float sx, float sy);
+    Vec2d getPerpendicular();
 
     Vec2d operator+(const Vec2d& other)
     {

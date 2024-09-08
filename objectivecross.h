@@ -6,7 +6,7 @@ class ObjectiveCross : public Objective
 {
 public:
     ObjectiveCross();
-    bool scan(Roadmap &xmapptr, Driver *&driver, Machine *&machine, Objective *&objective) override;
+    bool move(Roadmap &xmapptr, Driver *&driver, Machine *&machine, Objective *&objective, float xdist) override;
 };
 
 #endif // OBJECTIVECROSS_H

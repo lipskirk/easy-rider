@@ -3,14 +3,14 @@
 
 Roadmap::Roadmap() {}
 
-void Roadmap::maketestmap()
+void Roadmap::makeTestMap()
 {
-    mapwidth=400;
-    mapheight=200;
+    mapWidth=400;
+    mapHeight=200;
 
-    for(int j=0;j<mapheight;j++)
+    for(int j=0;j<mapHeight;j++)
     {
-        for(int i=0;i<mapwidth;i++)
+        for(int i=0;i<mapWidth;i++)
         {
             if((j>=60)&&(j<=63))
             {
@@ -24,21 +24,38 @@ void Roadmap::maketestmap()
             {
                 roads.push_back(std::make_unique<Road>(Road (true,i,j,1,0)));
             }
-
+            else if((j>63)&&(j<100)&&(i>=90)&&(i<93))
+            {
+                roads.push_back(std::make_unique<Road>(Road (true,i,j,0,1)));
+            }
+            else if((j>83)&&(j<127)&&(i>=43)&&(i<45))
+            {
+                roads.push_back(std::make_unique<Road>(Road (true,i,j,0,-1)));
+            }
+            else if((j<=83)&&(j>80)&&(i<45))
+            {
+                roads.push_back(std::make_unique<Road>(Road (true,i,j,-1,0)));
+            }
+            else if((j>=100)&&(j<102)&&(i>=205)&&(i<250))
+            {
+                roads.push_back(std::make_unique<Road>(Road (true,i,j,1,0)));
+            }
+            else if((j>=100)&&(j<160)&&(i>=248)&&(i<250))
+            {
+                roads.push_back(std::make_unique<Road>(Road (true,i,j,0,1)));
+            }
             else if((i>=200)&&(i<205)&&(j<60))
             {
                 roads.push_back(std::make_unique<Road>(Road (true,i,j,0,1)));
             }
-
             else if((i>=200)&&(i<205)&&(j>=63)&&(j<160))
             {
                 roads.push_back(std::make_unique<Road>(Road (true,i,j,0,1)));
             }
             else if((i>=200)&&(i<205)&&(j>=163))
             {
-                roads.push_back(std::make_unique<Road>(Road (true,i,j,0,1)));
+                roads.push_back(std::make_unique<Road>(Road (true,i,j,0,-1)));
             }
-
             else
             {
                 roads.push_back(std::make_unique<Road>(Road (true,i,j,0,0)));
@@ -47,42 +64,33 @@ void Roadmap::maketestmap()
     }
 }
 
-bool Roadmap::getroadpos(int &xcnt, Vec2d &vecptr)
-{
-    xcnt++;
-    if(xcnt<static_cast<int>(roads.size()))
-    {
-        vecptr.setxy(roads[xcnt]->getposx(),roads[xcnt]->getposy());
-        return true;
-    }
-    return false;
-}
 
-void Roadmap::findstartpoints()
+
+void Roadmap::findStartPoints()
 {
-    for(int j=0;j<mapheight;j++)
+    for(int j=0;j<mapHeight;j++)
     {
-        for(int i=0;i<mapwidth;i++)
+        for(int i=0;i<mapWidth;i++)
         {
-            if((i==0)||(j==0)||(i==mapwidth-1)||(j==mapheight-1))
+            if((i==0)||(j==0)||(i==mapWidth-1)||(j==mapHeight-1))
             {
-                Vec2d pos(roads[i+mapwidth*j]->getposx(),roads[i+mapwidth*j]->getposy());
-                Vec2d pos2=pos-roads[i+mapwidth*j]->getdirection();
-                if((pos2.getx()<0)||(pos2.getx()>=mapwidth)||(pos2.gety()<0)||(pos2.gety()>=mapheight))
+                Vec2d pos(roads[i+mapWidth*j]->getPositionX(),roads[i+mapWidth*j]->getPositionY());
+                Vec2d pos2=pos-roads[i+mapWidth*j]->getDirection();
+                if((pos2.getX()<0)||(pos2.getX()>=mapWidth)||(pos2.getY()<0)||(pos2.getY()>=mapHeight))
                 {
-                    startpoints.push_back(pos);
+                    startPoints.push_back(pos);
                 }
             }
         }
     }
 }
 
-bool Roadmap::choosestartpoint(Vec2d &xposvec)
+bool Roadmap::chooseStartPoint(Vec2d &xposvec)
 {
     std::vector<Vec2d> occupiedpoints;
-    Vec2d vpos=startpoints[rand()%(startpoints.size())];
+    Vec2d vpos=startPoints[rand()%(startPoints.size())];
 
-    while(!checkiffree(vpos))
+    while(!checkIfFree(vpos))
     {
         bool newstartpoint=true;
         for(auto elem:occupiedpoints)
@@ -97,51 +105,50 @@ bool Roadmap::choosestartpoint(Vec2d &xposvec)
             occupiedpoints.push_back(vpos);
         }
 
-        if(occupiedpoints.size()>=startpoints.size())
+        if(occupiedpoints.size()>=startPoints.size())
         {
             occupiedpoints.clear();
             return false;
         }
-        vpos=startpoints[rand()%(startpoints.size())];
+        vpos=startPoints[rand()%(startPoints.size())];
     }
     xposvec=vpos;
     occupiedpoints.clear();
     return true;
 }
 
-void Roadmap::setfree(Vec2d xposvec, bool isfree)
+void Roadmap::setFree(Vec2d xposvec, bool isfree)
 {
-    roads[static_cast<int>(xposvec.getx())+mapwidth*static_cast<int>(xposvec.gety())]->setfree(isfree);
+    roads[static_cast<int>(xposvec.getX())+mapWidth*static_cast<int>(xposvec.getY())]->setFree(isfree);
 }
 
-Vec2d Roadmap::getdirection(Vec2d xposvec)
-{
-    return roads[static_cast<int>(xposvec.getx())+mapwidth*static_cast<int>(xposvec.gety())]->getdirection();
-}
 
-bool Roadmap::checkifinbound(Vec2d xposvec)
+
+
+
+bool Roadmap::checkIfInBounds(Vec2d xposvec)
 {
-    if((xposvec.getx()<0)||(xposvec.gety()<0)||(xposvec.getx()>=mapwidth)||(xposvec.gety()>=mapheight))
+    if((xposvec.getX()<0)||(xposvec.getY()<0)||(xposvec.getX()>=mapWidth)||(xposvec.getY()>=mapHeight))
     {
         return false;
     }
     return true;
 }
 
-bool Roadmap::checkifroad(Vec2d xposvec)
+bool Roadmap::checkIfRoad(Vec2d xposvec)
 {
-    if(checkifinbound(xposvec))
+    if(checkIfInBounds(xposvec))
     {
-        return roads[static_cast<int>(xposvec.getx())+mapwidth*static_cast<int>(xposvec.gety())]->checkifroad();
+        return roads[static_cast<int>(xposvec.getX())+mapWidth*static_cast<int>(xposvec.getY())]->checkIfRoad();
     }
     return false;
 }
 
-bool Roadmap::checkifdirection(Vec2d xposvec, Vec2d xdirvec)
+bool Roadmap::checkIfDirectionSame(Vec2d xposvec, Vec2d xdirvec)
 {
-    if(checkifinbound(xposvec))
+    if(checkIfInBounds(xposvec))
     {
-        if(roads[static_cast<int>(xposvec.getx())+mapwidth*static_cast<int>(xposvec.gety())]->getdirection()==xdirvec)
+        if(roads[static_cast<int>(xposvec.getX())+mapWidth*static_cast<int>(xposvec.getY())]->getDirection()==xdirvec)
         {
             return true;
         }
@@ -149,20 +156,20 @@ bool Roadmap::checkifdirection(Vec2d xposvec, Vec2d xdirvec)
     return false;
 }
 
-bool Roadmap::checkiffree(Vec2d xposvec)
+bool Roadmap::checkIfFree(Vec2d xposvec)
 {
-    if(checkifinbound(xposvec))
+    if(checkIfInBounds(xposvec))
     {
-        return roads[static_cast<int>(xposvec.getx())+mapwidth*static_cast<int>(xposvec.gety())]->checkiffree();
+        return roads[static_cast<int>(xposvec.getX())+mapWidth*static_cast<int>(xposvec.getY())]->checkIfFree();
     }
     return false;
 }
 
-bool Roadmap::checkiflanefree(Vec2d xposvec, float xrange, bool reverse)
+bool Roadmap::checkIfLaneEmpty(Vec2d xposvec, float xrange, bool reverse)
 {
-    if(checkifinbound(xposvec))
+    if(checkIfInBounds(xposvec))
     {
-        Vec2d dirvec=roads[static_cast<int>(xposvec.getx())+mapwidth*static_cast<int>(xposvec.gety())]->getdirection();
+        Vec2d dirvec=roads[static_cast<int>(xposvec.getX())+mapWidth*static_cast<int>(xposvec.getY())]->getDirection();
         if(reverse)
         {
             dirvec=dirvec*(-1);
@@ -171,7 +178,7 @@ bool Roadmap::checkiflanefree(Vec2d xposvec, float xrange, bool reverse)
         while(freespace<xrange)
         {
             xposvec=xposvec+dirvec;
-            if(!checkiffree(xposvec))
+            if(!checkIfFree(xposvec))
             {
                 return false;
             }
@@ -180,4 +187,19 @@ bool Roadmap::checkiflanefree(Vec2d xposvec, float xrange, bool reverse)
         return true;
     }
     return false;
+}
+
+bool Roadmap::getRoadPosition(Vec2d &vecptr, int xnum)
+{
+    if(xnum<static_cast<int>(roads.size()))
+    {
+        vecptr.setXY(roads[xnum]->getPositionX(),roads[xnum]->getPositionY());
+        return true;
+    }
+    return false;
+}
+
+Vec2d Roadmap::getDirection(Vec2d xposvec)
+{
+    return roads[static_cast<int>(xposvec.getX())+mapWidth*static_cast<int>(xposvec.getY())]->getDirection();
 }

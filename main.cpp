@@ -31,10 +31,10 @@ int main(int argc, char *argv[])
             Simulation demo;
 
             std::vector<Vec2d> roadstosprites;
-            demo.printroadspos(roadstosprites);
+            demo.printRoadsPosition(roadstosprites);
             for(auto& elem:roadstosprites)
             {
-                w.SmapQueue(elem.getx(),elem.gety());
+                w.SmapQueue(elem.getX(),elem.getY());
             }
             roadstosprites.clear();
 
@@ -44,22 +44,22 @@ int main(int argc, char *argv[])
             std::vector<Machine*> machinestosprites;
             while(w.state)
             {
-                demo.printvehiclespos(machinestosprites);
+                demo.printVehiclesPosition(machinestosprites);
                 for(auto& elem:machinestosprites)
                 {
-                    w.SpriteQueue(elem->getposx(),elem->getposy(),'m');
+                    w.SpriteQueue(elem->getPositionX(),elem->getPositionY(),'m');
                 }
                 machinestosprites.clear();
 
                 tp2=tp1;
                 tp1=std::chrono::system_clock::now();
                 std::chrono::duration<double> elapsed_seconds=tp1-tp2;
-                demo.update(elapsed_seconds.count(),w.carsinput,w.bikesinput,w.trucksinput);
+                demo.updateSimulation(elapsed_seconds.count(),w.carsinput,w.bikesinput,w.trucksinput);
 
-                demo.printvehiclespos(machinestosprites);
+                demo.printVehiclesPosition(machinestosprites);
                 for(auto& elem:machinestosprites)
                 {
-                    w.SpriteQueue(elem->getposx(),elem->getposy(),elem->gettype());
+                    w.SpriteQueue(elem->getPositionX(),elem->getPositionY(),elem->getMachineType());
                 }
                 machinestosprites.clear();
 
@@ -68,10 +68,10 @@ int main(int argc, char *argv[])
                 delay();
             }
 
-            demo.printvehiclespos(machinestosprites);
+            demo.printVehiclesPosition(machinestosprites);
             for(auto& elem:machinestosprites)
             {
-                w.SpriteQueue(elem->getposx(),elem->getposy(),'m');
+                w.SpriteQueue(elem->getPositionX(),elem->getPositionY(),'m');
             }
             machinestosprites.clear();
         }

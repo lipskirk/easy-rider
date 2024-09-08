@@ -5,17 +5,17 @@
 class Road
 {
 private:
-    bool free;
+    bool isFree;
     Vec2d direction;
     Vec2d position;
 public:
     Road(bool xocc, int xpos, int ypos, float xdir, float ydir);
-    void setfree(bool xstate);
-    float getposx();
-    float getposy();
-    bool checkifroad();
-    bool checkiffree();
-    Vec2d getdirection();
+    float getPositionX();
+    float getPositionY();
+    bool checkIfRoad();
+    bool checkIfFree();
+    Vec2d getDirection();
+    void setFree(bool xstate);
 };
 
 #endif // ROAD_H
