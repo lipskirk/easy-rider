@@ -25,7 +25,7 @@ void Simulation::updateSimulation(double xtime, int xcars, int xbikes, int xtruc
 
     while(vehicles.getVehiclePtr(vehicletmp,cnt))
     {
-        if(!(vehicletmp->moveVehicle(roadmap,xtime)))
+        if(!(vehicletmp->moveVehicle(roadmap,(float)xtime)))
         {
             vehicles.deleteVehicle(cnt);
         }
@@ -48,7 +48,6 @@ void Simulation::printVehiclesPosition(std::vector<Machine*>& xmachines)
 void Simulation::printRoadsPosition(std::vector<Vec2d>& xroads)
 {
     Vec2d vecptr;
-    Vec2d vecdir0(0,0);
     int cnt=0;
 
     while(roadmap.getRoadPosition(vecptr,cnt))

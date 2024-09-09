@@ -47,7 +47,7 @@ float Machine::getPredictedDistance(float xtime)
     if(distance<0){
         return 0;
     }
-    return 10*distance;
+    return distance;
 }
 
 
@@ -64,7 +64,7 @@ void Machine::adjustAcceleration(float xvalue)
     }
 }
 
-void Machine::moveTo(Vec2d xvec)
+void Machine::moveBy(Vec2d xvec)
 {
     position=position+xvec;
 }

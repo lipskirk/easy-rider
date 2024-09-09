@@ -11,7 +11,7 @@ Vehicle::Vehicle(Machine *xmachineptr)
 bool Vehicle::moveVehicle(Roadmap &xmapptr, float xtime)
 {
     Objective* objptrtmp=nullptr;
-    if(obj->move(xmapptr,driver,machine,objptrtmp,machine->getPredictedDistance(xtime)))
+    if(obj->move(xmapptr,driver,machine,objptrtmp,10*machine->getPredictedDistance(xtime)))
     {
         obj=objptrtmp;
     }

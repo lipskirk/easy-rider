@@ -3,11 +3,16 @@
 Bike::Bike(Vec2d xposvec)
 {
     position=xposvec;
-    speed=50;
-    maxSpeed=80;
+    speed=0;
+    maxSpeed=60;
     acceleration=0;
-    maxAcceleration=20;
-    minAcceleration=-20;
+    maxAcceleration=50;
+    minAcceleration=-50;
+}
+
+char Bike::getMachineType()
+{
+    return 'b';
 }
 
 void Bike::countMachineType(int vnumber[])
@@ -15,7 +20,3 @@ void Bike::countMachineType(int vnumber[])
     vnumber[1]--;
 }
 
-char Bike::getMachineType()
-{
-    return 'b';
-}

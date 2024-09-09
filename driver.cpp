@@ -31,37 +31,35 @@ void Driver::setCrossDirection(Vec2d xvec)
 void Driver::keepDistanceToVehicleAhead(Machine *&xmachine, float xtime)
 {
     float disttoobst;
-    if(distanceToObstacle==0)
+    if((distanceToObstacle==0)||(distanceToStop==0))
     {
-        disttoobst=distanceToStop;
-    }
-    else if(distanceToStop==0)
-    {
-        disttoobst=distanceToObstacle;
+        disttoobst=std::max(distanceToObstacle,distanceToStop);
     }
     else
     {
         disttoobst=std::min(distanceToObstacle,distanceToStop);
     }
 
-    float acceleration=xmachine->getAcceleration();
-    float speed=xmachine->getSpeed();
-
-    float timetoobst=(sqrt(speed*speed+2*acceleration*disttoobst)-speed)/acceleration;
-    float nt=timetoobst/xtime;
-
-    float distance=0;
-
-    for(int i=0;i<nt;i++)
+    if(disttoobst!=0)
     {
-        acceleration=acceleration-1;
-        distance=distance+speed*xtime+(acceleration*xtime*xtime)/2;
-        speed=speed+acceleration*xtime;
-    }
+        float acceleration=xmachine->getAcceleration();
+        float speed=xmachine->getSpeed();
 
-    if(distance>disttoobst)
-    {
-        brake(xmachine);
+        float timetoobst=(sqrt(speed*speed+2*acceleration*disttoobst)-speed)/acceleration;
+        float nt=timetoobst/xtime;
+
+        float distance=0;
+        for(int i=0;i<=nt;i++)
+        {
+            acceleration=acceleration-1;
+            distance=distance+speed*xtime+(acceleration*xtime*xtime)/2;
+            speed=speed+acceleration*xtime;
+        }
+
+        if(distance>=disttoobst)
+        {
+            brake(xmachine);
+        }
     }
 }
 
@@ -136,10 +134,7 @@ float Driver::checkDistanceToVehicleAhead(Roadmap &xroadmap,Machine *&xmachine, 
     //szukanie przeszkod na pasie ruchu wprzod
     float xdist=0;
     Vec2d forwardPosVec=posvec;//pole na wprost do sprawdzenia
-    while(
-        //xroadmap.checkifroad(forwardPosVec)
-        xdist<10*xrange
-        )
+    while(xdist<(10*xrange))
     {//sprawdzanie kolejnych pól w przód
         xdist=xdist+1;
         forwardPosVec=forwardPosVec+dirvec;
@@ -171,7 +166,41 @@ bool Driver::checkIfCanOvertake(Roadmap &xroadmap,Machine *&xmachine)
     return true;
 }
 
+bool Driver::checkIfCrossRoadEmpty(Roadmap &xroadmap,Machine *&xmachine)
+{
+    Vec2d xposvec(xmachine->getPositionX(),xmachine->getPositionY());
+    Vec2d xdirvec=xroadmap.getDirection(xposvec);
+    xposvec=xposvec+xdirvec;
 
+    while(xroadmap.checkIfDirectionSame(xposvec,xdirvec.getPerpendicular())||xroadmap.checkIfDirectionSame(xposvec,xdirvec.getPerpendicular()*(-1)))
+    {
+        if(!xroadmap.checkIfCrossLaneEmpty(xposvec,10))
+        {
+            return false;
+        }
+        if(!xroadmap.checkIfCrossLaneEmpty(xposvec,10,true))
+        {
+            return false;
+        }
+        xposvec=xposvec+xdirvec;
+    }
+    return true;
+}
+
+
+void Driver::crossRoad(Roadmap &xroadmap,Machine *&xmachine)
+{
+    Vec2d posvec(xmachine->getPositionX(),xmachine->getPositionY());
+    Vec2d dirvec=xroadmap.getDirection(posvec);
+
+    crossDirection=dirvec;
+    Vec2d posvectmp(xmachine->getPositionX(),xmachine->getPositionY());
+    xroadmap.setFree(posvectmp,true);
+    changeLane(xmachine,dirvec);
+    posvectmp.setXY(xmachine->getPositionX(),xmachine->getPositionY());
+    xroadmap.setFree(posvectmp,false);
+    resetObjective();
+}
 
 void Driver::startOvertaking(Roadmap &xroadmap,Machine *&xmachine, float disttoobst)
 {
@@ -187,7 +216,7 @@ void Driver::startOvertaking(Roadmap &xroadmap,Machine *&xmachine, float disttoo
     xroadmap.setFree(posvectmp,true);
 }
 
-bool Driver::goToRoadSide(Roadmap &xroadmap,Machine *&xmachine, bool toright)
+void Driver::goToRoadSide(Roadmap &xroadmap,Machine *&xmachine, bool toright)
 {
     Vec2d posvec(xmachine->getPositionX(),xmachine->getPositionY());
     Vec2d dirvec=xroadmap.getDirection(posvec);
@@ -207,7 +236,6 @@ bool Driver::goToRoadSide(Roadmap &xroadmap,Machine *&xmachine, bool toright)
             changeLane(xmachine,turnvec);
         }
     }
-    return true;
 }
 
 void Driver::accelerate(Machine *&xmachine)
@@ -227,7 +255,7 @@ void Driver::stop(Machine *&xmachine)
 
 void Driver::changeLane(Machine *&xmachine, Vec2d xvec)
 {
-    xmachine->moveTo(xvec);
+    xmachine->moveBy(xvec);
 }
 
 

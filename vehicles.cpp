@@ -5,14 +5,30 @@
 
 Vehicles::Vehicles() {}
 
-bool Vehicles::getVehiclePtr(Vehicle *&vehicleptr,int xnum)
+void Vehicles::addVehicle(int xcars, int xbikes, int xtrucks, Vec2d xvecpos)
 {
-    if(xnum<static_cast<int>(vehicles.size()))
+    int vnumber[3];
+    vnumber[0]=xcars;
+    vnumber[1]=xbikes;
+    vnumber[2]=xtrucks;
+    for(auto& elem:vehicles)
     {
-        vehicleptr=vehicles[xnum].get();
-        return true;
+        elem->getMachinePtr()->countMachineType(vnumber);
     }
-    return false;
+    Machine* machineptr;
+    if((xcars>xbikes)&&(xcars>xtrucks))
+    {
+        machineptr=new Car(xvecpos);
+    }
+    else if(xbikes>xtrucks)
+    {
+        machineptr=new Bike(xvecpos);
+    }
+    else
+    {
+        machineptr=new Truck(xvecpos);
+    }
+    vehicles.push_back(std::make_unique<Vehicle>(Vehicle(machineptr)));
 }
 
 void Vehicles::deleteVehicle(int &xcnt)
@@ -30,28 +46,12 @@ bool Vehicles::checkIfVehiclesFull(int xnumber)
     return true;
 }
 
-void Vehicles::addVehicle(int xc, int xb, int xt, Vec2d xvecpos)
+bool Vehicles::getVehiclePtr(Vehicle *&vehicleptr,int xnum)
 {
-    int vnumber[3];
-    vnumber[0]=xc;
-    vnumber[1]=xb;
-    vnumber[2]=xt;
-    for(auto& elem:vehicles)
+    if(xnum<static_cast<int>(vehicles.size()))
     {
-        elem->getMachinePtr()->countMachineType(vnumber);
+        vehicleptr=vehicles[xnum].get();
+        return true;
     }
-    Machine* machineptr;
-    if((xc>xb)&&(xc>xt))
-    {
-        machineptr=new Car(xvecpos);
-    }
-    else if(xb>xt)
-    {
-        machineptr=new Bike(xvecpos);
-    }
-    else
-    {
-        machineptr=new Truck(xvecpos);
-    }
-    vehicles.push_back(std::make_unique<Vehicle>(Vehicle(machineptr)));
+    return false;
 }

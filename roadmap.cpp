@@ -125,7 +125,6 @@ void Roadmap::setFree(Vec2d xposvec, bool isfree)
 
 
 
-
 bool Roadmap::checkIfInBounds(Vec2d xposvec)
 {
     if((xposvec.getX()<0)||(xposvec.getY()<0)||(xposvec.getX()>=mapWidth)||(xposvec.getY()>=mapHeight))
@@ -187,6 +186,27 @@ bool Roadmap::checkIfLaneEmpty(Vec2d xposvec, float xrange, bool reverse)
         return true;
     }
     return false;
+}
+
+bool Roadmap::checkIfCrossLaneEmpty(Vec2d xposvec, float xrange, bool reverse)
+{
+    float n=0;
+    Vec2d xdirvec=getDirection(xposvec).getPerpendicular();
+    if(reverse)
+    {
+        xdirvec=xdirvec*(-1);
+    }
+    while(n<=xrange){
+        xposvec=xposvec+xdirvec;
+        n=n+1;
+        if(checkIfRoad(xposvec)
+            &&(checkIfDirectionSame(xposvec,xdirvec.getPerpendicular())||checkIfDirectionSame(xposvec,xdirvec.getPerpendicular()*(-1)))
+            &&(!checkIfFree(xposvec)))
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 bool Roadmap::getRoadPosition(Vec2d &vecptr, int xnum)

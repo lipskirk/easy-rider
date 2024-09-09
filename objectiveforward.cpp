@@ -10,7 +10,6 @@ bool ObjectiveForward::move(Roadmap &xmapptr, Driver *&driver, Machine *&machine
 {
     if(checkIfRoadStraight(xmapptr,driver,machine,objective,xdist))
     {
-        //sprawdzenie czy nie wyprzedzał lub skończył
         if(!driver->checkIfOvertaking(xmapptr,machine))
         {
             driver->goToRoadSide(xmapptr,machine,true);
@@ -20,12 +19,11 @@ bool ObjectiveForward::move(Roadmap &xmapptr, Driver *&driver, Machine *&machine
         if(disttoobst>0)
         {
             if(disttoobst<driver->getDistanceToObstacle())
-            {//przeszkoda blizej niz poprzednio
-
+            {
                 if(driver->checkIfCanOvertake(xmapptr,machine))
                 {
-                    //ZMIANA PASA NA LEWY, rozpoczecie wyprzedzania
                     driver->startOvertaking(xmapptr,machine,disttoobst);
+                    disttoobst=driver->checkDistanceToVehicleAhead(xmapptr,machine,xdist);
                 }
                 else
                 {
@@ -38,7 +36,7 @@ bool ObjectiveForward::move(Roadmap &xmapptr, Driver *&driver, Machine *&machine
             }
         }
         else
-        {//brak przeszkód, przyspieszanie i jazda prosto
+        {
             driver->accelerate(machine);
         }
         driver->setDistanceToObstacle(disttoobst);
@@ -50,7 +48,7 @@ bool ObjectiveForward::move(Roadmap &xmapptr, Driver *&driver, Machine *&machine
 
 bool ObjectiveForward::checkIfRoadStraight(Roadmap &xmapptr, Driver *&driver, Machine *&machine, Objective *&objective, float xdist)
 {
-    float xrange=5*xdist;
+    float xrange=xdist;
     Vec2d xposvec(machine->getPositionX(),machine->getPositionY());
     bool right=driver->checkIfPreferredToTurnRight();
     Vec2d xdirvec=xmapptr.getDirection(xposvec);
@@ -60,64 +58,64 @@ bool ObjectiveForward::checkIfRoadStraight(Roadmap &xmapptr, Driver *&driver, Ma
         xturndirvec=xturndirvec*(-1);
     }
 
-    float disttoturn=0;//dystans do zakretu
-    xposvec=xposvec+xturndirvec;//pole z boku
+    float disttoturn=0;
+    xposvec=xposvec+xturndirvec;
 
     do
-    {//sprawdzenie kolejnego pola
+    {
         if(xmapptr.checkIfRoad(xposvec))
-        {//jest drogą
+        {
             if(xmapptr.checkIfDirectionSame(xposvec,xdirvec))
-            {//jest prosto
-                xposvec=xposvec+xturndirvec;//do spr. następne pole w kierunku skrętu
+            {
+                xposvec=xposvec+xturndirvec;
             }
             else if(xmapptr.checkIfDirectionSame(xposvec,xdirvec*(-1)))
-            {//jest w tył
+            {
                 break;
             }
             else
-            {// jest w bok
+            {
                 xposvec=xposvec+xdirvec;
-                disttoturn=disttoturn+1;//do spr. następne pole prosto
+                disttoturn=disttoturn+1;
             }
         }
         else
-        {//nie jest drogą
+        {
             break;
         }
     }
     while(disttoturn<xrange);
 
     do
-    {//sprawdzenie kolejnego pola
+    {
         if(xmapptr.checkIfRoad(xposvec))
-        {//jest drogą
+        {
             if(xmapptr.checkIfDirectionSame(xposvec,xdirvec))
-            {//jest prosto
-                xposvec=xposvec+xturndirvec;//do spr. następne pole w kierunku skrętu
+            {
+                xposvec=xposvec+xturndirvec;
             }
             else if(xmapptr.checkIfDirectionSame(xposvec,xdirvec*(-1)))
-            {//jest w tył
+            {
                 xposvec=xposvec+xdirvec;
-                disttoturn=disttoturn+1;//do spr. następne pole prosto
+                disttoturn=disttoturn+1;
             }
             else
-            {// jest w bok
+            {
                 break;
             }
         }
         else
-        {//nie jest drogą
+        {
             xposvec=xposvec+xdirvec;
-            disttoturn=disttoturn+1;//do spr. następne pole prosto
+            disttoturn=disttoturn+1;
         }
     }
     while(disttoturn<xrange);
 
     Vec2d xposvec2=xposvec-xturndirvec;
     while(!xmapptr.checkIfRoad(xposvec2))
-    {//na wprost nie ma drogi
-        xposvec2=xposvec2-xdirvec;//cofnięcie do punktu, gdzie droga się skończyła
+    {
+        xposvec2=xposvec2-xdirvec;
         disttoturn=disttoturn-1;
     }
     xposvec=xposvec2+xturndirvec;
@@ -136,7 +134,7 @@ bool ObjectiveForward::checkIfRoadStraight(Roadmap &xmapptr, Driver *&driver, Ma
         fw=true;
     }
     if(xmapptr.checkIfDirectionSame(xposvec2,xdirvec))
-    {//nie ma przecznicy na drodze
+    {
         if(xmapptr.checkIfDirectionSame(xposvec,xturndirvec))
         {
             if(driver->chooseIfTurn(disttoturn,right,!fw))
@@ -169,7 +167,7 @@ bool ObjectiveForward::checkIfRoadStraight(Roadmap &xmapptr, Driver *&driver, Ma
         }
     }
     else
-    {//jest przecznica na drodze
+    {
         if(!xmapptr.checkIfDirectionSame(xposvec2,xturndirvec))
         {
             right=!right;

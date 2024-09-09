@@ -6,68 +6,19 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    carsinput=0;
-    bikesinput=0;
-    trucksinput=0;
-    state=false;
-    connect(ui->carSlider,SIGNAL(valueChanged(int)),this,SLOT(carsetValue(int)));
-    connect(ui->bikeSlider,SIGNAL(valueChanged(int)),this,SLOT(bikesetValue(int)));
-    connect(ui->truckSlider,SIGNAL(valueChanged(int)),this,SLOT(trucksetValue(int)));
-    connect(ui->startButton,SIGNAL(toggled(bool)),this,SLOT(startstop(bool)));
+    inputCarsNumber=0;
+    inputBikesNumber=0;
+    inputTrucksNumber=0;
+    simulationState=false;
+    connect(ui->carSlider,SIGNAL(valueChanged(int)),this,SLOT(carSetValue(int)));
+    connect(ui->bikeSlider,SIGNAL(valueChanged(int)),this,SLOT(bikeSetValue(int)));
+    connect(ui->truckSlider,SIGNAL(valueChanged(int)),this,SLOT(truckSetValue(int)));
+    connect(ui->startButton,SIGNAL(toggled(bool)),this,SLOT(changeButtonState(bool)));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-MainWindow::Sprite::Sprite(float xpos,float ypos,char xtype){
-    positionx=10+xpos;
-    positiony=10+ypos;
-    type=xtype;
-}
-
-void MainWindow::SpriteClear()
-{
-    sprites.clear();
-}
-
-void MainWindow::SpriteQueue(float xposx,float xposy,char xtype)
-{
-    sprites.push_back(Sprite(xposx,xposy,xtype));
-}
-
-void MainWindow::SmapQueue(float xposx,float xposy)
-{
-    smap.push_back(Sprite(xposx,xposy,'m'));
-}
-
-void MainWindow::carsetValue(int xval)
-{
-    carsinput=xval;
-}
-
-void MainWindow::bikesetValue(int xval)
-{
-    bikesinput=xval;
-}
-
-void MainWindow::trucksetValue(int xval)
-{
-    trucksinput=xval;
-}
-
-void MainWindow::startstop(bool xstate)
-{
-    state=xstate;
-    if(state)
-    {
-        ui->startButton->setText(QStringLiteral("Zakoncz symulacje"));
-    }
-    else
-    {
-        ui->startButton->setText(QStringLiteral("Uruchom symulacje"));
-    }
 }
 
 void MainWindow::paintEvent(QPaintEvent *event)
@@ -78,16 +29,16 @@ void MainWindow::paintEvent(QPaintEvent *event)
     QPen pen;
     pen.setWidth(0);
 
-    for(auto& elem:smap){
+    for(auto& elem:mapSprites){
         pen.setColor(Qt::black);
         painter.setPen(pen);
-        painter.drawRect(QRect(2*static_cast<int>(elem.getposx())-1,2*static_cast<int>(elem.getposy())-1,2,2));
+        painter.drawRect(QRect(2*static_cast<int>(elem.getPositionX())-1,2*static_cast<int>(elem.getPositionY())-1,2,2));
     }
 
     pen.setWidth(1);
 
     for(auto& elem:sprites){
-        switch(elem.gettype())
+        switch(elem.getType())
         {
         case 'b':
             pen.setColor(Qt::red);
@@ -105,21 +56,74 @@ void MainWindow::paintEvent(QPaintEvent *event)
             pen.setColor(Qt::white);
         }
         painter.setPen(pen);
-        painter.drawRect(QRect(2*static_cast<int>(elem.getposx())-1,2*static_cast<int>(elem.getposy())-1,2,2));
+        painter.drawRect(QRect(2*static_cast<int>(elem.getPositionX())-1,2*static_cast<int>(elem.getPositionY())-1,2,2));
     }
 }
 
-float MainWindow::Sprite::getposx()
+void MainWindow::queueSprites(float xposx,float xposy,char xtype)
 {
-    return positionx;
+    sprites.push_back(Sprite(xposx,xposy,xtype));
 }
 
-float MainWindow::Sprite::getposy()
+void MainWindow::queueMapSprites(float xposx,float xposy)
 {
-    return positiony;
+    mapSprites.push_back(Sprite(xposx,xposy,'m'));
 }
 
-char MainWindow::Sprite::gettype()
+void MainWindow::clearSprites()
+{
+    sprites.clear();
+}
+
+
+
+void MainWindow::carSetValue(int xval)
+{
+    inputCarsNumber=xval;
+}
+
+void MainWindow::bikeSetValue(int xval)
+{
+    inputBikesNumber=xval;
+}
+
+void MainWindow::truckSetValue(int xval)
+{
+    inputTrucksNumber=xval;
+}
+
+void MainWindow::changeButtonState(bool xstate)
+{
+    simulationState=xstate;
+    if(simulationState)
+    {
+        ui->startButton->setText(QStringLiteral("Zakoncz symulacje"));
+    }
+    else
+    {
+        ui->startButton->setText(QStringLiteral("Uruchom symulacje"));
+    }
+}
+
+
+
+MainWindow::Sprite::Sprite(float xpos,float ypos,char xtype){
+    positionX=10+xpos;
+    positionY=10+ypos;
+    type=xtype;
+}
+
+float MainWindow::Sprite::getPositionX()
+{
+    return positionX;
+}
+
+float MainWindow::Sprite::getPositionY()
+{
+    return positionY;
+}
+
+char MainWindow::Sprite::getType()
 {
     return type;
 }

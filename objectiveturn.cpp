@@ -5,8 +5,6 @@ ObjectiveTurn::ObjectiveTurn() {}
 
 bool ObjectiveTurn::move(Roadmap &xmapptr, Driver *&driver, Machine *&machine, Objective *&objective, float xdist)
 {
-    bool objectivechanged=false;
-
     driver->goToRoadSide(xmapptr,machine);
 
     Vec2d xposvec(machine->getPositionX(),machine->getPositionY());
@@ -26,12 +24,12 @@ bool ObjectiveTurn::move(Roadmap &xmapptr, Driver *&driver, Machine *&machine, O
         xmapptr.setFree(posvectmp,false);
         driver->resetObjective();
         objective=new ObjectiveForward;
-        objectivechanged=true;
+        return true;
     }
     else
     {
         driver->brake(machine);
     }
 
-    return objectivechanged;
+    return false;
 }

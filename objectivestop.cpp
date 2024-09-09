@@ -4,8 +4,6 @@ ObjectiveStop::ObjectiveStop() {}
 
 bool ObjectiveStop::move(Roadmap &xmapptr, Driver *&driver, Machine *&machine, Objective *&objective, float xdist)
 {
-    bool objectivechanged=false;
-
     driver->goToRoadSide(xmapptr,machine,true);
 
     Vec2d xposvec(machine->getPositionX(),machine->getPositionY());
@@ -21,5 +19,5 @@ bool ObjectiveStop::move(Roadmap &xmapptr, Driver *&driver, Machine *&machine, O
         machine->countdownToDelete();
     }
 
-    return objectivechanged;
+    return false;
 }

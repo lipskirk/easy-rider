@@ -26,54 +26,54 @@ int main(int argc, char *argv[])
 
     while(EasyRider.running)
     {
-        if(w.state)
+        if(w.simulationState)
         {
             Simulation demo;
 
-            std::vector<Vec2d> roadstosprites;
-            demo.printRoadsPosition(roadstosprites);
-            for(auto& elem:roadstosprites)
+            std::vector<Vec2d> roadsToSprites;
+            demo.printRoadsPosition(roadsToSprites);
+            for(auto& elem:roadsToSprites)
             {
-                w.SmapQueue(elem.getX(),elem.getY());
+                w.queueMapSprites(elem.getX(),elem.getY());
             }
-            roadstosprites.clear();
+            roadsToSprites.clear();
 
             auto tp1=std::chrono::system_clock::now();
             auto tp2=std::chrono::system_clock::now();
 
-            std::vector<Machine*> machinestosprites;
-            while(w.state)
+            std::vector<Machine*> vehiclesToSprites;
+            while(w.simulationState)
             {
-                demo.printVehiclesPosition(machinestosprites);
-                for(auto& elem:machinestosprites)
+                demo.printVehiclesPosition(vehiclesToSprites);
+                for(auto& elem:vehiclesToSprites)
                 {
-                    w.SpriteQueue(elem->getPositionX(),elem->getPositionY(),'m');
+                    w.queueSprites(elem->getPositionX(),elem->getPositionY(),'m');
                 }
-                machinestosprites.clear();
+                vehiclesToSprites.clear();
 
                 tp2=tp1;
                 tp1=std::chrono::system_clock::now();
                 std::chrono::duration<double> elapsed_seconds=tp1-tp2;
-                demo.updateSimulation(elapsed_seconds.count(),w.carsinput,w.bikesinput,w.trucksinput);
+                demo.updateSimulation(elapsed_seconds.count(),w.inputCarsNumber,w.inputBikesNumber,w.inputTrucksNumber);
 
-                demo.printVehiclesPosition(machinestosprites);
-                for(auto& elem:machinestosprites)
+                demo.printVehiclesPosition(vehiclesToSprites);
+                for(auto& elem:vehiclesToSprites)
                 {
-                    w.SpriteQueue(elem->getPositionX(),elem->getPositionY(),elem->getMachineType());
+                    w.queueSprites(elem->getPositionX(),elem->getPositionY(),elem->getMachineType());
                 }
-                machinestosprites.clear();
+                vehiclesToSprites.clear();
 
                 w.repaint();
-                w.SpriteClear();
+                w.clearSprites();
                 delay();
             }
 
-            demo.printVehiclesPosition(machinestosprites);
-            for(auto& elem:machinestosprites)
+            demo.printVehiclesPosition(vehiclesToSprites);
+            for(auto& elem:vehiclesToSprites)
             {
-                w.SpriteQueue(elem->getPositionX(),elem->getPositionY(),'m');
+                w.queueSprites(elem->getPositionX(),elem->getPositionY(),'m');
             }
-            machinestosprites.clear();
+            vehiclesToSprites.clear();
         }
 
         w.repaint();
