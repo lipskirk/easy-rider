@@ -1,4 +1,4 @@
-EASY RIDER
+# Easy Rider
 
 Projekt wykonany w ramach kursu Zaawansowane C++, Ośrodek Kształcenia na Odległość, Politechnika Warszawska.
 
